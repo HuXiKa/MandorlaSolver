@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f3ef">
+  <title>Mandorla Solver</title>
+  <link rel="stylesheet" href="styles.css?v=active-step-pair-6">
+  <script type="module" src="app.js?v=active-step-pair-3"></script>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="wordmark" href="./" aria-label="Mandorla Solver home">
+        <span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>MANDORLA <b>/</b> SOLVER</span>
+      </a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+        <span class="theme-icon" aria-hidden="true">◐</span>
+        <span class="theme-label">Dark mode</span>
+      </button>
+    </header>
+
+    <section class="workspace" aria-label="Mandorla game">
+      <div class="board-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">GAME STATE</p>
+            <h1 id="board-title">Set the board</h1>
+          </div>
+          <div class="state-indicators">
+            <span class="state-indicator" id="state-indicator"><span></span> Solved</span>
+            <span class="composition-indicator" id="composition-indicator" role="status" aria-live="polite">
+              <span class="composition-pip"></span>
+              <span id="composition-text">Valid composition</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="board-wrap">
+          <div class="board-grid" id="board" role="group" tabindex="0" aria-label="Mandorla game board. Use arrow keys to select a piece, then Enter to paint it."></div>
+        </div>
+
+        <div class="board-tools">
+          <div class="board-actions">
+            <button class="board-action-button" id="reset-board" title="Restore the solved layout">Solved layout</button>
+            <button class="board-action-button" id="scramble-board" title="Scramble with legal turns" aria-label="Scramble board"><span class="action-icon" aria-hidden="true">⤨</span><span>Scramble</span></button>
+          </div>
+        </div>
+        <details class="options-disclosure" id="board-options" open>
+          <summary>Board options</summary>
+          <div class="board-options-content">
+            <div class="color-picker" role="group" aria-label="Color to paint">
+              <button class="color-choice" data-color="black" aria-label="Paint black" aria-pressed="true"><span class="swatch black"></span><span>Black</span></button>
+              <button class="color-choice" data-color="red" aria-label="Paint red" aria-pressed="false"><span class="swatch red"></span><span>Red</span></button>
+              <button class="color-choice" data-color="yellow" aria-label="Paint yellow" aria-pressed="false"><span class="swatch yellow"></span><span>Yellow</span></button>
+              <button class="info-button" id="paint-info" type="button" aria-label="About painting and valid piece counts" aria-describedby="paint-help" aria-expanded="false" data-tooltip="Choose a color, then click pieces to paint."><span aria-hidden="true">i</span></button>
+              <span class="visually-hidden" id="paint-help">Choose a color, then click pieces to paint.</span>
+            </div>
+            <div class="scheme-picker" id="scheme-picker" role="group" aria-label="Color scheme"></div>
+            <div class="turn-controls" role="group" aria-label="Circle turns">
+              <div class="turn-set">
+                <span class="turn-label">Left</span>
+                <div class="turn-directions" role="group" aria-label="Left circle direction">
+                  <button class="turn-button" id="turn-left-clockwise" aria-label="Turn left clockwise" title="Turn left clockwise">↻</button>
+                  <button class="turn-button" id="turn-left-counterclockwise" aria-label="Turn left counterclockwise" title="Turn left counterclockwise">↺</button>
+                </div>
+              </div>
+              <div class="turn-set">
+                <span class="turn-label">Right</span>
+                <div class="turn-directions" role="group" aria-label="Right circle direction">
+                  <button class="turn-button" id="turn-right-clockwise" aria-label="Turn right clockwise" title="Turn right clockwise">↻</button>
+                  <button class="turn-button" id="turn-right-counterclockwise" aria-label="Turn right counterclockwise" title="Turn right counterclockwise">↺</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <aside class="solution-panel" aria-label="Solution controls">
+        <div class="section-heading solution-heading">
+          <div>
+            <p class="eyebrow">SEARCH</p>
+            <h2>Solution route</h2>
+          </div>
+          <details class="search-options" id="search-options" open>
+            <summary>Search options</summary>
+            <div class="search-options-content">
+              <div class="depth-control">
+                <label for="max-depth">Depth</label>
+                <input id="max-depth" class="depth-input" type="number" min="1" max="25" step="1" value="20" required aria-label="Maximum solution depth in moves">
+                <button class="info-button" id="depth-info" type="button" aria-label="About search depth" aria-describedby="depth-help" aria-expanded="false" data-tooltip="Increasing this limit can make the solver examine exponentially more states, so higher depths may take much longer."><span aria-hidden="true">i</span></button>
+                <span class="visually-hidden" id="depth-help">Increasing the search depth can make the solver examine exponentially more states, so higher depths may take much longer.</span>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <div class="search-status" id="search-status" role="status" aria-live="polite">
+          <span class="status-pip"></span>
+          <span id="status-text">Ready to solve</span>
+        </div>
+        <div class="search-actions">
+          <button class="primary-button" id="solve-button"><span aria-hidden="true">⌕</span><span id="solve-label">Find shortest solution</span></button>
+          <button class="cancel-button" id="cancel-button" hidden>Cancel</button>
+        </div>
+
+        <section class="route" id="route" aria-label="Solution moves" hidden>
+          <div class="route-progress">
+            <span id="step-count">Start</span>
+            <span id="route-length">0 turns</span>
+          </div>
+          <input id="step-slider" class="step-slider" type="range" min="0" max="0" value="0" aria-label="Solution step">
+          <div class="step-controls">
+            <button class="step-button" id="previous-step" aria-label="Previous step" title="Previous step">←</button>
+            <span class="step-caption" id="step-caption">Starting position</span>
+            <button class="step-button" id="next-step" aria-label="Next step" title="Next step">→</button>
+          </div>
+          <ol class="move-list" id="move-list"></ol>
+        </section>
+
+        <div class="empty-route" id="empty-route">
+          <span class="empty-symbol" aria-hidden="true">↗</span>
+          <p>Moves will appear here</p>
+        </div>
+      </aside>
+    </section>
+
+  </main>
+</body>
+</html>
