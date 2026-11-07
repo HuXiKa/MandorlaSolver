@@ -149,7 +149,7 @@ let isPlayingSolution = false;
 let playbackTimer = null;
 
 function syncOptionDisclosures(query = mobileOptionsQuery) {
-  boardOptions.open = !query.matches;
+  boardOptions.open = true;
   searchOptions.open = !query.matches;
 }
 syncOptionDisclosures();
